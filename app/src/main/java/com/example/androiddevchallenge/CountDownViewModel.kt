@@ -1,34 +1,52 @@
 package com.example.androiddevchallenge
 
 import android.os.CountDownTimer
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import com.example.androiddevchallenge.ui.CountDownObject
 
 class CountDownViewModel: ViewModel() {
 
-    var countDownObject by mutableStateOf(0L)
+    private lateinit var timer: CountDownTimer
+
+    var countDownObject by mutableStateOf(CountDownObject(0L), referentialEqualityPolicy())
         private set
 
-    init {
-        start(7200000L)
-    }
-
-    fun start(time: Long) {
-        countDownObject = time
-        object :CountDownTimer(time, 1){
+    fun start(time: Long = countDownObject.remainingTime) {
+        countDownObject = countDownObject.copy(
+            remainingTime = time,
+            isRunning = true
+        )
+        timer = object : CountDownTimer(time, 1){
             override fun onTick(millisUntilFinished: Long) {
-                countDownObject = millisUntilFinished
+                countDownObject = countDownObject.copy(
+                    remainingTime = millisUntilFinished
+                )
             }
 
             override fun onFinish() {
-                countDownObject = 0L
+                countDownObject = countDownObject.copy(
+                    remainingTime = 0L,
+                    isRunning = false
+                )
             }
 
-        }.start()
+        }
+        timer.start()
     }
 
     fun pause() {
+        timer.cancel()
+        countDownObject = countDownObject.copy(
+            isRunning = false
+        )
+    }
+
+    fun stop() {
+        timer.cancel()
+        countDownObject = countDownObject.copy(
+            remainingTime = 0L,
+            isRunning = false
+        )
     }
 }

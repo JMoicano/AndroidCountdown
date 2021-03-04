@@ -20,6 +20,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -27,19 +28,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.androiddevchallenge.ui.ClockScreen
 import com.example.androiddevchallenge.ui.ClockTimer
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
 class MainActivity : AppCompatActivity() {
 
-    val viewModel by viewModels<CountDownViewModel>()
+    private val viewModel by viewModels<CountDownViewModel>()
 
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    ClockTimer(timestamp = viewModel.countDownObject)
+                    ClockScreen(
+                        countDownObject = viewModel.countDownObject,
+                        start = viewModel::start,
+                        pause = viewModel::pause,
+                        stop = viewModel::stop
+                    )
                 }
             }
         }
